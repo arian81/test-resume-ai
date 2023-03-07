@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   message: string;
@@ -44,18 +44,12 @@ export const ResumeAI: React.FC<Props> = ({ message }) => {
       );
 
     const res = await fetch(url, requestOptions);
-    return res.json();
+    return res.text();
   };
 
   const { data, isLoading, isError, status } = useQuery(
-    "getResponse",
-    getResponse,
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      retry: 1,
-      retryDelay: 3000000,
-    }
+    ["getResponse"],
+    getResponse
   );
 
   if (isError)
@@ -79,15 +73,26 @@ export const ResumeAI: React.FC<Props> = ({ message }) => {
         </div>
       </div>
     );
-  //   if (isLoading) return <progress className="progress-primary w-56"></progress>;
-  //   console.log(status);
-  //   if (data != undefined || data != null) {
-  //     return (
-  //       <div>
-  //         <h1>Response:</h1>
-  //         <p>{JSON.stringify(data)}</p>
-  //       </div>
-  //     );
-  //   }
-  return <div>{JSON.stringify(data)}</div>;
+  const msg = new SpeechSynthesisUtterance();
+  const voices = window.speechSynthesis.getVoices();
+  if (data) {
+    msg.text = data;
+    msg.voice = voices[50];
+    window.speechSynthesis.speak(msg);
+  }
+
+  return (
+    <div className="w-[300px]">
+      <div className="chat chat-start">
+        <div className="chat-image avatar">
+          <div className="w-20 rounded-full">
+            <img src="/krish-blurp-copped.png" />
+          </div>
+        </div>
+        <div className="chat-bubble chat-bubble-primary">
+          {isLoading ? "Loading..." : data}
+        </div>
+      </div>
+    </div>
+  );
 };
