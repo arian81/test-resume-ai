@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface Props {
   message: string;
 }
 
 export const ResumeAI: React.FC<Props> = ({ message }) => {
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const getResponse = async () => {
     const myHeaders = new Headers();
     myHeaders.append("content-type", "application/json");
@@ -49,7 +51,11 @@ export const ResumeAI: React.FC<Props> = ({ message }) => {
 
   const { data, isLoading, isError, status } = useQuery(
     ["getResponse"],
-    getResponse
+    getResponse,
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
   );
 
   if (isError)
@@ -74,25 +80,30 @@ export const ResumeAI: React.FC<Props> = ({ message }) => {
       </div>
     );
   const msg = new SpeechSynthesisUtterance();
-  const voices = window.speechSynthesis.getVoices();
-  if (data) {
+  if (isSpeaking && data) {
     msg.text = data;
-    msg.voice = voices[50];
     window.speechSynthesis.speak(msg);
+    setIsSpeaking(false);
   }
 
   return (
-    <div className="w-[300px]">
+    <div className="p-10">
       <div className="chat chat-start">
         <div className="chat-image avatar">
           <div className="w-20 rounded-full">
-            <img src="/krish-blurp-copped.png" />
+            <img src="/robot.png" />
           </div>
         </div>
         <div className="chat-bubble chat-bubble-primary">
           {isLoading ? "Loading..." : data}
         </div>
       </div>
+      <button
+        className="btn btn-primary"
+        onClick={() => setIsSpeaking(!isSpeaking)}
+      >
+        Speak
+      </button>
     </div>
   );
 };

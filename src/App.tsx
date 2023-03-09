@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div
-      className="flex items-center justify-center h-full w-full flex-col gap-5"
+      className="flex items-center justify-center h-full w-full flex-col gap-36"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           setButtonValue(inputValue);
@@ -23,7 +23,7 @@ function App() {
       <div className="flex flex-row gap-5">
         <input
           type="text"
-          className="input input-bordered input-primary w-[500px] max-w-3xl"
+          className="input input-bordered input-primary md:w-[50em] max-w-3xl"
           placeholder={"What do you want to know about me?"}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
